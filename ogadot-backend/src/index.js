@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { connectDB } from "./config/db.js";
+import connectDB from "./config/db.js";
 import bookingController from "./controller/bookingController.js";
 
 dotenv.config();
@@ -18,6 +18,8 @@ app.get("/", (req, res) => {
   res.send("Ogadot backend is running");
 });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on port ${port}`);
+  console.log(`  -Local: http://localhost:${port}/bookings`);
+  console.log(`  -Network: http://0.0.0.0/${port}/bookings`);
 });

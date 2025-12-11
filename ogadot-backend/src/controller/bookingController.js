@@ -6,9 +6,10 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const bookings = Booking.find().sort({ createdAt: -1 });
+    const bookings = await Booking.find().sort({ createdAt: -1 });
     res.json(bookings);
   } catch (err) {
+    console.error("Database Error:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
