@@ -29,19 +29,25 @@ router.post("/:id/pay", async (req, res) => {
     const booking = await Booking.findById(id);
 
     if (!booking) return res.status(404).json({ message: "Booking not found" });
+    if (!Number.isFinite(booking.fareAmount)) {
+      return res.status(400).json({ message: "Booking has no valid fare" });
+    }
 
     const paymentData = await createPaymentIntent(booking.fareAmount);
 
     booking.payrexPaymentId = paymentData.id;
     await booking.save();
 
-    res.json({
-      checkotUrl:
-        paymentData.next_action?.redirect?.url || paymentData.client_secret,
-    });
+    res.json({ checkoutUrl: paymentData.url });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Payment error" });
+    console.error("Payment error:", err.message);
+    if (err.idempotencyKey) {
+      console.error("Payrex idempotencyKey:", err.idempotencyKey);
+    }
+    res.status(502).json({
+      message: err.message || "Payment error",
+      idempotencyKey: err.idempotencyKey,
+    });
   }
 });
 

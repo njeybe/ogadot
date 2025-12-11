@@ -6,7 +6,7 @@ import bookingController from "./controller/bookingController.js";
 
 dotenv.config();
 connectDB();
-const port = process.env.port;
+const port = process.env.PORT || process.env.port || 5050;
 
 const app = express();
 app.use(cors());
